@@ -2,6 +2,7 @@ package com.mygdx.game.screens;
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -24,6 +25,9 @@ import com.badlogic.gdx.utils.viewport.StretchViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.mygdx.game.MyGdxGame;
 import com.mygdx.game.scenes.Hud;
+import com.mygdx.game.sprites.Mario;
+import com.mygdx.game.tools.B2WorldCreator;
+
 import org.w3c.dom.Text;
 
 public class PlayScreen implements Screen {
@@ -32,6 +36,7 @@ public class PlayScreen implements Screen {
     private OrthographicCamera gamecam;
     private Viewport viewport;
     private Hud hud;
+    private Mario player; // Mario class object
 
     // tiled map var
     private TmxMapLoader mapLoader;
@@ -44,88 +49,39 @@ public class PlayScreen implements Screen {
 
     public PlayScreen(MyGdxGame myGdxGame) {
         this.myGdxGame = myGdxGame;
+        world = new World(new Vector2(0, -10), true);
+        player = new Mario(world); // initialization of  Mario class object
         gamecam = new OrthographicCamera();
-        viewport = new FillViewport(MyGdxGame.V_WIDTH, MyGdxGame.V_HEIGHT, gamecam);
+        viewport = new FillViewport(MyGdxGame.V_WIDTH / MyGdxGame.PPM, MyGdxGame.V_HEIGHT / MyGdxGame.PPM, gamecam);
         hud =new Hud(myGdxGame.batch);
 
         mapLoader = new TmxMapLoader();
         map = mapLoader.load("level1.tmx");
-        render = new OrthogonalTiledMapRenderer(map);
+        render = new OrthogonalTiledMapRenderer(map, 1/MyGdxGame.PPM);
         gamecam.position.set(viewport.getWorldWidth() / 2, viewport.getWorldHeight() / 2, 0);
-
-        world = new World(new Vector2(0, 0), true);
         b2dr = new Box2DDebugRenderer();
 
-        BodyDef bodyDef = new BodyDef();
-        PolygonShape shape = new PolygonShape();
-        FixtureDef fdef = new FixtureDef();
-        Body body;
-
-        // create ground bodies/fixtures
-        for(MapObject object: map.getLayers().get(2).getObjects().getByType(RectangleMapObject.class)) {
-            Rectangle rect = ((RectangleMapObject) object).getRectangle();
-
-            bodyDef.type = BodyDef.BodyType.StaticBody;
-            bodyDef.position.set(rect.getX() + rect.getWidth() / 2, rect.getY()+ rect.getHeight() / 2);
-
-            body = world.createBody(bodyDef);
-
-            shape.setAsBox(rect.getWidth() / 2, rect.getHeight() / 2);
-            fdef.shape = shape;
-            body.createFixture(fdef);
-        }
-
-        // create pipes bodies/fixtures
-        for(MapObject object: map.getLayers().get(3).getObjects().getByType(RectangleMapObject.class)) {
-            Rectangle rect = ((RectangleMapObject) object).getRectangle();
-
-            bodyDef.type = BodyDef.BodyType.StaticBody;
-            bodyDef.position.set(rect.getX() + rect.getWidth() / 2, rect.getY()+ rect.getHeight() / 2);
-
-            body = world.createBody(bodyDef);
-
-            shape.setAsBox(rect.getWidth() / 2, rect.getHeight() / 2);
-            fdef.shape = shape;
-            body.createFixture(fdef);
-        }
-
-        // create brick bodies/fixtures
-        for(MapObject object: map.getLayers().get(5).getObjects().getByType(RectangleMapObject.class)) {
-            Rectangle rect = ((RectangleMapObject) object).getRectangle();
-
-            bodyDef.type = BodyDef.BodyType.StaticBody;
-            bodyDef.position.set(rect.getX() + rect.getWidth() / 2, rect.getY()+ rect.getHeight() / 2);
-
-            body = world.createBody(bodyDef);
-
-            shape.setAsBox(rect.getWidth() / 2, rect.getHeight() / 2);
-            fdef.shape = shape;
-            body.createFixture(fdef);
-        }
-
-        // create coins bodies/fixtures
-        for(MapObject object: map.getLayers().get(4).getObjects().getByType(RectangleMapObject.class)) {
-            Rectangle rect = ((RectangleMapObject) object).getRectangle();
-
-            bodyDef.type = BodyDef.BodyType.StaticBody;
-            bodyDef.position.set(rect.getX() + rect.getWidth() / 2, rect.getY()+ rect.getHeight() / 2);
-
-            body = world.createBody(bodyDef);
-
-            shape.setAsBox(rect.getWidth() / 2, rect.getHeight() / 2);
-            fdef.shape = shape;
-            body.createFixture(fdef);
-        }
+        new B2WorldCreator(world, map);
     }
 
     public void handleInput(float dt) {
-        if(Gdx.input.isTouched()) {
-            gamecam.position.x += 100 * dt ;
+        if(Gdx.input.isKeyJustPressed(Input.Keys.UP)) {
+            player.b2body.applyLinearImpulse(new Vector2(0, 4f), player.b2body.getWorldCenter(), true);
+        }
+        if(Gdx.input.isKeyPressed(Input.Keys.RIGHT) && player.b2body.getLinearVelocity().x <= 2) {
+            player.b2body.applyLinearImpulse(new Vector2(0.1f, 0), player.b2body.getWorldCenter(), true);
+        }
+        if(Gdx.input.isKeyPressed(Input.Keys.LEFT) && player.b2body.getLinearVelocity().x >= -2) {
+            player.b2body.applyLinearImpulse(new Vector2(-0.1f, 0), player.b2body.getWorldCenter(), true);
         }
     }
 
     public void update(float dt) {
         handleInput(dt);
+
+        world.step(1/60f, 6, 2);
+
+        gamecam.position.x = player.b2body.getPosition().x;
 
         gamecam.update();
         render.setView(gamecam);
@@ -177,6 +133,10 @@ public class PlayScreen implements Screen {
 
     @Override
     public void dispose() {
-
+        map.dispose();
+        render.dispose();
+        world.dispose();
+        b2dr.dispose();
+        hud.dispose();
     }
 }
