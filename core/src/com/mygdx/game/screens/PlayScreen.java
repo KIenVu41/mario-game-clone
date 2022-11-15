@@ -28,6 +28,7 @@ import com.mygdx.game.MyGdxGame;
 import com.mygdx.game.scenes.Hud;
 import com.mygdx.game.sprites.Mario;
 import com.mygdx.game.tools.B2WorldCreator;
+import com.mygdx.game.tools.WorldContactListener;
 
 import org.w3c.dom.Text;
 
@@ -56,6 +57,7 @@ public class PlayScreen implements Screen {
         this.myGdxGame = myGdxGame;
         world = new World(new Vector2(0, -10), true);
         player = new Mario(world, this); // initialization of  Mario class object
+        world.setContactListener(new WorldContactListener());
         gamecam = new OrthographicCamera();
         viewport = new FillViewport(MyGdxGame.V_WIDTH / MyGdxGame.PPM, MyGdxGame.V_HEIGHT / MyGdxGame.PPM, gamecam);
         hud =new Hud(myGdxGame.batch);

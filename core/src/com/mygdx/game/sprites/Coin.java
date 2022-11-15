@@ -11,19 +11,12 @@ import com.mygdx.game.MyGdxGame;
 public class Coin extends InteractiveTileObject {
     public Coin(World world, TiledMap map, Rectangle bounds) {
         super(world, map, bounds);
-//        BodyDef bodyDef = new BodyDef();
-//        FixtureDef fdef = new FixtureDef();
-//        PolygonShape shape = new PolygonShape();
-//
-//        bodyDef.type = BodyDef.BodyType.StaticBody;
-//        bodyDef.position.set((bounds.getX() + bounds.getWidth() / 2) / MyGdxGame.PPM, (bounds.getY()+ bounds.getHeight() / 2) / MyGdxGame.PPM);
-//        //bodyDef.position.set((rect.getX() + rect.getWidth() / 2), (rect.getY()+ rect.getHeight() / 2));
-//
-//        body = world.createBody(bodyDef);
-//
-//        shape.setAsBox(bounds.getWidth() / 2 / MyGdxGame.PPM, bounds.getHeight() / 2 / MyGdxGame.PPM);
-//        //shape.setAsBox(rect.getWidth() / 2, rect.getHeight() / 2);
-//        fdef.shape = shape;
-//        body.createFixture(fdef);
+        fixture.setUserData(this);
+        setCategoryFilter(MyGdxGame.COIN_BIT);
+    }
+
+    @Override
+    public void onHeadHit() {
+
     }
 }
