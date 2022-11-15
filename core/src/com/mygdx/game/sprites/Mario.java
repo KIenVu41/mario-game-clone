@@ -28,9 +28,9 @@ public class Mario extends Sprite {
     private float stateTimer;
     private boolean runningRight;
 
-    public Mario(World world, PlayScreen screen) {
+    public Mario(PlayScreen screen) {
         super(screen.getAtlas().findRegion("little_mario"));
-        this.world = world;
+        this.world = screen.getWorld();
         currentState = State.STANDING;
         previousState = State.STANDING;
         stateTimer = 0;
@@ -106,7 +106,6 @@ public class Mario extends Sprite {
     public void defineMario() {
         BodyDef bdef = new BodyDef();
         bdef.position.set(32 / MyGdxGame.PPM, 32 / MyGdxGame.PPM);
-        //bdef.position.set(32, 32);
         bdef.type = BodyDef.BodyType.DynamicBody;
         b2body = world.createBody(bdef);
 
@@ -114,11 +113,10 @@ public class Mario extends Sprite {
         CircleShape shape = new CircleShape();
         shape.setRadius(6 / MyGdxGame.PPM);
         fdef.filter.categoryBits = MyGdxGame.MARIO_BIT;
-        fdef.filter.maskBits = MyGdxGame.DEFAULT_BIT | MyGdxGame.COIN_BIT | MyGdxGame.BRICK_BIT;
-        //shape.setRadius(5);
-
+        fdef.filter.maskBits = MyGdxGame.GROUND_BIT | MyGdxGame.COIN_BIT | MyGdxGame.BRICK_BIT | MyGdxGame.ENEMY_BIT | MyGdxGame.OBJECT_BIT;
         fdef.shape = shape;
         b2body.createFixture(fdef);
+
         EdgeShape head = new EdgeShape();
         head.set(new Vector2(-2 / MyGdxGame.PPM, 6 / MyGdxGame.PPM), new Vector2(2 / MyGdxGame.PPM, 6 / MyGdxGame.PPM));
         fdef.shape = head;

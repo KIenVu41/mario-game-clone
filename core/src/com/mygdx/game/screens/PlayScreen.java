@@ -27,6 +27,7 @@ import com.badlogic.gdx.utils.viewport.StretchViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.mygdx.game.MyGdxGame;
 import com.mygdx.game.scenes.Hud;
+import com.mygdx.game.sprites.Goomba;
 import com.mygdx.game.sprites.Mario;
 import com.mygdx.game.tools.B2WorldCreator;
 import com.mygdx.game.tools.WorldContactListener;
@@ -41,7 +42,8 @@ public class PlayScreen implements Screen {
     private OrthographicCamera gamecam;
     private Viewport viewport;
     private Hud hud;
-    private Mario player; // Mario class object
+    private Mario player;// Mario class object
+    private Goomba goomba;
 
     // tiled map var
     private TmxMapLoader mapLoader;
@@ -60,7 +62,7 @@ public class PlayScreen implements Screen {
 
         this.myGdxGame = myGdxGame;
         world = new World(new Vector2(0, -10), true);
-        player = new Mario(world, this); // initialization of  Mario class object
+        player = new Mario(this); // initialization of  Mario class object
         world.setContactListener(new WorldContactListener());
         gamecam = new OrthographicCamera();
         viewport = new FillViewport(MyGdxGame.V_WIDTH / MyGdxGame.PPM, MyGdxGame.V_HEIGHT / MyGdxGame.PPM, gamecam);
@@ -72,11 +74,13 @@ public class PlayScreen implements Screen {
         gamecam.position.set(viewport.getWorldWidth() / 2, viewport.getWorldHeight() / 2, 0);
         b2dr = new Box2DDebugRenderer();
 
-        new B2WorldCreator(world, map);
+        new B2WorldCreator(this);
 
         music = MyGdxGame.manager.get("audio/music/mario_music.ogg", Music.class);
         music.setLooping(true);
         music.play();
+
+        goomba = new Goomba(this, .32f, .32f);
     }
 
     public TextureAtlas getAtlas() {
@@ -101,6 +105,7 @@ public class PlayScreen implements Screen {
         world.step(1/60f, 6, 2);
 
         player.update(dt);
+        goomba.update(dt);
         hud.update(dt);
 
         gamecam.position.x = player.b2body.getPosition().x;
@@ -131,6 +136,7 @@ public class PlayScreen implements Screen {
         myGdxGame.batch.setProjectionMatrix(gamecam.combined);
         myGdxGame.batch.begin();
         player.draw(myGdxGame.batch);
+        goomba.draw(myGdxGame.batch);
         myGdxGame.batch.end();
 
         myGdxGame.batch.setProjectionMatrix(hud.stage.getCamera().combined);
@@ -141,6 +147,14 @@ public class PlayScreen implements Screen {
     public void resize(int width, int height) {
         viewport.update(width, height);
 
+    }
+
+    public TiledMap getMap() {
+        return map;
+    }
+
+    public World getWorld() {
+        return world;
     }
 
     @Override
