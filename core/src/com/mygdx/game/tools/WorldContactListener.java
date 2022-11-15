@@ -27,13 +27,22 @@ public class WorldContactListener implements ContactListener {
             }
         }
 
-        switch (cDef) {
+        switch(cDef) {
             case MyGdxGame.ENEMY_HEAD_BIT | MyGdxGame.MARIO_BIT:
                 if(fixA.getFilterData().categoryBits == MyGdxGame.ENEMY_HEAD_BIT) {
                     ((Enemy)fixA.getUserData()).hitOnHead();
-                } else if(fixB.getFilterData().categoryBits == MyGdxGame.ENEMY_HEAD_BIT) {
+                } else {
                     ((Enemy)fixB.getUserData()).hitOnHead();
                 }
+                break;
+            case MyGdxGame.ENEMY_BIT | MyGdxGame.OBJECT_BIT:
+                if(fixA.getFilterData().categoryBits == MyGdxGame.ENEMY_BIT) {
+                    ((Enemy)fixA.getUserData()).reverseVelocity(true, false);
+                } else {
+                    ((Enemy)fixB.getUserData()).reverseVelocity(true, false);
+                }
+                break;
+            case MyGdxGame.MARIO_BIT | MyGdxGame.ENEMY_BIT:
         }
     }
 
