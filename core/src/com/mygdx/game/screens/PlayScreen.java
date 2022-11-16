@@ -27,6 +27,7 @@ import com.mygdx.game.tools.B2WorldCreator;
 import com.mygdx.game.tools.WorldContactListener;
 
 import java.util.PriorityQueue;
+import java.util.concurrent.LinkedBlockingDeque;
 
 public class PlayScreen implements Screen {
 
@@ -52,7 +53,7 @@ public class PlayScreen implements Screen {
     private Music music;
 
     private Array<Item> items;
-    private PriorityQueue<ItemDef> itemsToSpawn;
+    private LinkedBlockingDeque<ItemDef> itemsToSpawn;
 
     public PlayScreen(MyGdxGame myGdxGame) {
         atlas = new TextureAtlas("Mario_and_Enemies.pack");
@@ -78,7 +79,7 @@ public class PlayScreen implements Screen {
         //music.play();
 
         items = new Array<Item>();
-        itemsToSpawn = new PriorityQueue<ItemDef>();
+        itemsToSpawn = new LinkedBlockingDeque<ItemDef>();
     }
 
     public void spawnItem(ItemDef itemDef) {
@@ -101,15 +102,15 @@ public class PlayScreen implements Screen {
     public void handleInput(float dt) {
         if(Gdx.input.isKeyPressed(Input.Keys.W)) {
             Gdx.app.log("Debug", "w pressed!");
-            player.b2body.applyLinearImpulse(new Vector2(0, 3f), player.b2body.getWorldCenter(), true);
+            player.b2body.applyLinearImpulse(new Vector2(0, 2f), player.b2body.getWorldCenter(), true);
         }
         if(Gdx.input.isKeyPressed(Input.Keys.D) && player.b2body.getLinearVelocity().x <= 2) {
             Gdx.app.log("Debug", "d pressed!");
-            player.b2body.applyLinearImpulse(new Vector2(1f, 0), player.b2body.getWorldCenter(), true);
+            player.b2body.applyLinearImpulse(new Vector2(2f, 0), player.b2body.getWorldCenter(), true);
         }
         if(Gdx.input.isKeyPressed(Input.Keys.A) && player.b2body.getLinearVelocity().x >= -2) {
             Gdx.app.log("Debug", "a pressed!");
-            player.b2body.applyLinearImpulse(new Vector2(-1f, 0), player.b2body.getWorldCenter(), true);
+            player.b2body.applyLinearImpulse(new Vector2(-2f, 0), player.b2body.getWorldCenter(), true);
         }
     }
 
