@@ -8,6 +8,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.mygdx.game.MyGdxGame;
 import com.mygdx.game.scenes.Hud;
 import com.mygdx.game.screens.PlayScreen;
+import com.mygdx.game.sprites.Mario;
 import com.mygdx.game.sprites.items.ItemDef;
 import com.mygdx.game.sprites.items.Mushroom;
 
@@ -23,7 +24,7 @@ public class Coin extends InteractiveTileObject {
     }
 
     @Override
-    public void onHeadHit() {
+    public void onHeadHit(Mario mario) {
         if(getCell().getTile().getId() == BLANK_COIN) {
             MyGdxGame.manager.get("audio/sounds/bump.wav", Sound.class).play();
         } else {
