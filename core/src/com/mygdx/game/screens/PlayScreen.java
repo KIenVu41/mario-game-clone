@@ -13,14 +13,20 @@ import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.FillViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.mygdx.game.MyGdxGame;
 import com.mygdx.game.scenes.Hud;
 import com.mygdx.game.sprites.enemies.Enemy;
 import com.mygdx.game.sprites.Mario;
+import com.mygdx.game.sprites.items.Item;
+import com.mygdx.game.sprites.items.ItemDef;
+import com.mygdx.game.sprites.items.Mushroom;
 import com.mygdx.game.tools.B2WorldCreator;
 import com.mygdx.game.tools.WorldContactListener;
+
+import java.util.PriorityQueue;
 
 public class PlayScreen implements Screen {
 
@@ -45,6 +51,9 @@ public class PlayScreen implements Screen {
     //music & sound
     private Music music;
 
+    private Array<Item> items;
+    private PriorityQueue<ItemDef> itemsToSpawn;
+
     public PlayScreen(MyGdxGame myGdxGame) {
         atlas = new TextureAtlas("Mario_and_Enemies.pack");
 
@@ -66,7 +75,23 @@ public class PlayScreen implements Screen {
 
         music = MyGdxGame.manager.get("audio/music/mario_music.ogg", Music.class);
         music.setLooping(true);
-        music.play();
+        //music.play();
+
+        items = new Array<Item>();
+        itemsToSpawn = new PriorityQueue<ItemDef>();
+    }
+
+    public void spawnItem(ItemDef itemDef) {
+        itemsToSpawn.add(itemDef);
+    }
+
+    public void handleSpawningItems() {
+    if(itemsToSpawn.isEmpty()) {
+        ItemDef itemDef = itemsToSpawn.poll();
+        if(itemDef.type == Mushroom.class) {
+            items.add(new Mushroom(this, itemDef.position.x, itemDef.position.y));
+        }
+    }
     }
 
     public TextureAtlas getAtlas() {
@@ -87,6 +112,7 @@ public class PlayScreen implements Screen {
 
     public void update(float dt) {
         handleInput(dt);
+        handleSpawningItems();
 
         world.step(1/60f, 6, 2);
 
@@ -96,6 +122,10 @@ public class PlayScreen implements Screen {
             if(e.getX() < player.getX() + 224 / MyGdxGame.PPM) {
                 e.b2body.setActive(true);
             }
+        }
+
+        for(Item item : items) {
+            item.update(dt);
         }
 
         hud.update(dt);
@@ -130,6 +160,10 @@ public class PlayScreen implements Screen {
         player.draw(myGdxGame.batch);
         for(Enemy e: creator.getGoombas()) {
             e.draw(myGdxGame.batch);
+        }
+
+        for(Item item : items) {
+            item.draw(myGdxGame.batch);
         }
         myGdxGame.batch.end();
 

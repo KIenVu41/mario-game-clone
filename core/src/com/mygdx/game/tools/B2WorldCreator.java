@@ -12,8 +12,8 @@ import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
 import com.mygdx.game.MyGdxGame;
 import com.mygdx.game.screens.PlayScreen;
-import com.mygdx.game.sprites.Brick;
-import com.mygdx.game.sprites.Coin;
+import com.mygdx.game.sprites.tileobjects.Brick;
+import com.mygdx.game.sprites.tileobjects.Coin;
 import com.mygdx.game.sprites.enemies.Goomba;
 
 public class B2WorldCreator {
