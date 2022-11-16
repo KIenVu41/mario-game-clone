@@ -6,13 +6,14 @@ import com.badlogic.gdx.physics.box2d.CircleShape;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.mygdx.game.MyGdxGame;
 import com.mygdx.game.screens.PlayScreen;
+import com.mygdx.game.sprites.Mario;
 
 public class Mushroom extends Item {
 
     public Mushroom(PlayScreen screen, float x, float y) {
         super(screen, x, y);
         setRegion(screen.getAtlas().findRegion("mushroom"), 0, 0, 16, 16);
-        velocity = new Vector2(0, 0);
+        velocity = new Vector2(0.7f, 0);
     }
 
     @Override
@@ -37,8 +38,8 @@ public class Mushroom extends Item {
     }
 
     @Override
-    public void use() {
-
+    public void use(Mario mario) {
+        destroy();
     }
 
     @Override

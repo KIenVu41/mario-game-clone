@@ -6,7 +6,6 @@ import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.World;
 import com.mygdx.game.screens.PlayScreen;
 
-import org.graalvm.compiler.lir.amd64.vector.AMD64VectorMove;
 
 public abstract class Enemy extends Sprite {
     protected World world;
