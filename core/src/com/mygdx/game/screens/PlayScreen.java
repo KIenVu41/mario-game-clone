@@ -27,6 +27,7 @@ import com.badlogic.gdx.utils.viewport.StretchViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.mygdx.game.MyGdxGame;
 import com.mygdx.game.scenes.Hud;
+import com.mygdx.game.sprites.Enemy;
 import com.mygdx.game.sprites.Goomba;
 import com.mygdx.game.sprites.Mario;
 import com.mygdx.game.tools.B2WorldCreator;
@@ -43,7 +44,6 @@ public class PlayScreen implements Screen {
     private Viewport viewport;
     private Hud hud;
     private Mario player;// Mario class object
-    private Goomba goomba;
 
     // tiled map var
     private TmxMapLoader mapLoader;
@@ -53,6 +53,7 @@ public class PlayScreen implements Screen {
     // box2d
     private World world;
     private Box2DDebugRenderer b2dr;
+    private B2WorldCreator creator;
 
     //music & sound
     private Music music;
@@ -74,13 +75,11 @@ public class PlayScreen implements Screen {
         gamecam.position.set(viewport.getWorldWidth() / 2, viewport.getWorldHeight() / 2, 0);
         b2dr = new Box2DDebugRenderer();
 
-        new B2WorldCreator(this);
+        creator = new B2WorldCreator(this);
 
         music = MyGdxGame.manager.get("audio/music/mario_music.ogg", Music.class);
         music.setLooping(true);
         music.play();
-
-        goomba = new Goomba(this, 5.64f, .16f);
     }
 
     public TextureAtlas getAtlas() {
@@ -105,7 +104,10 @@ public class PlayScreen implements Screen {
         world.step(1/60f, 6, 2);
 
         player.update(dt);
-        goomba.update(dt);
+        for(Enemy e: creator.getGoombas()) {
+            e.update(dt);
+        }
+
         hud.update(dt);
 
         gamecam.position.x = player.b2body.getPosition().x;
@@ -136,7 +138,9 @@ public class PlayScreen implements Screen {
         myGdxGame.batch.setProjectionMatrix(gamecam.combined);
         myGdxGame.batch.begin();
         player.draw(myGdxGame.batch);
-        goomba.draw(myGdxGame.batch);
+        for(Enemy e: creator.getGoombas()) {
+            e.draw(myGdxGame.batch);
+        }
         myGdxGame.batch.end();
 
         myGdxGame.batch.setProjectionMatrix(hud.stage.getCamera().combined);
