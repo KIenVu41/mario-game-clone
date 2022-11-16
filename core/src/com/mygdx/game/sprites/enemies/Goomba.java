@@ -1,4 +1,4 @@
-package com.mygdx.game.sprites;
+package com.mygdx.game.sprites.enemies;
 
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Batch;
@@ -11,10 +11,9 @@ import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.utils.Array;
 import com.mygdx.game.MyGdxGame;
 import com.mygdx.game.screens.PlayScreen;
+import com.mygdx.game.sprites.enemies.Enemy;
 
-import java.awt.Polygon;
-
-public class Goomba extends Enemy{
+public class Goomba extends Enemy {
 
     private float stateTime;
     private Animation<TextureRegion> walkAnimation;

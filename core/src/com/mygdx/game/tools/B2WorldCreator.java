@@ -14,7 +14,7 @@ import com.mygdx.game.MyGdxGame;
 import com.mygdx.game.screens.PlayScreen;
 import com.mygdx.game.sprites.Brick;
 import com.mygdx.game.sprites.Coin;
-import com.mygdx.game.sprites.Goomba;
+import com.mygdx.game.sprites.enemies.Goomba;
 
 public class B2WorldCreator {
     private Array<Goomba> goombas;
