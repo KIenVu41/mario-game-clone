@@ -72,7 +72,7 @@ public class Mario extends Sprite {
         frames.add(new TextureRegion(screen.getAtlas().findRegion("big_mario"), 240, 0, 16, 32));
         frames.add(new TextureRegion(screen.getAtlas().findRegion("big_mario"), 0, 0, 16, 32));
         frames.add(new TextureRegion(screen.getAtlas().findRegion("big_mario"), 240, 0, 16, 32));
-        frames.add(new TextureRegion(screen.getAtlas().findRegion("big_m ario"), 0, 0, 16, 32));
+        frames.add(new TextureRegion(screen.getAtlas().findRegion("big_mario"), 0, 0, 16, 32));
         growMario = new Animation(0.2f, frames);
 
 
@@ -272,6 +272,10 @@ public class Mario extends Sprite {
 
     public boolean isDead(){
         return marioIsDead;
+    }
+
+    public float getStateTimer() {
+        return stateTimer;
     }
 
     public void hit(Enemy enemy){

@@ -101,9 +101,10 @@ public class PlayScreen implements Screen {
 
     public void handleInput(float dt) {
         if(player.currentState != Mario.State.DEAD) {
+//            Gdx.input.isKeyPressed(Input.Keys.W)
             if(Gdx.input.isKeyPressed(Input.Keys.W)) {
                 Gdx.app.log("Debug", "w pressed!");
-                player.b2body.applyLinearImpulse(new Vector2(0, 2f), player.b2body.getWorldCenter(), true);
+                player.b2body.applyLinearImpulse(new Vector2(0, 4f), player.b2body.getWorldCenter(), true);
             }
             if(Gdx.input.isKeyPressed(Input.Keys.D) && player.b2body.getLinearVelocity().x <= 2) {
                 Gdx.app.log("Debug", "d pressed!");
@@ -178,6 +179,18 @@ public class PlayScreen implements Screen {
 
         myGdxGame.batch.setProjectionMatrix(hud.stage.getCamera().combined);
         hud.stage.draw();
+
+        if(gameOver()) {
+            myGdxGame.setScreen(new GameOverScreen(myGdxGame));
+            dispose();
+        }
+    }
+
+    public boolean gameOver() {
+        if(player.currentState == Mario.State.DEAD && player.getStateTimer() > 3) {
+            return true;
+        }
+        return false;
     }
 
     @Override
