@@ -12,10 +12,13 @@ import com.badlogic.gdx.utils.ScreenUtils;
 import com.mygdx.game.screens.PlayScreen;
 
 public class MyGdxGame extends Game {
+	//Virtual Screen size and Box2D Scale(Pixels Per Meter)
 	public static final int V_WIDTH = 400;
 	public static final int V_HEIGHT = 200;
 	public static final float PPM = 200;
 
+	//Box2D Collision Bits
+	public static final short NOTHING_BIT = 0;
 	public static final short GROUND_BIT = 1;
 	public static final short MARIO_BIT = 2;
 	public static final short BRICK_BIT = 4;
