@@ -12,6 +12,7 @@ import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.utils.Array;
 import com.mygdx.game.MyGdxGame;
 import com.mygdx.game.screens.PlayScreen;
+import com.mygdx.game.sprites.Mario;
 import com.mygdx.game.sprites.enemies.Enemy;
 
 public class Goomba extends Enemy {
@@ -85,8 +86,16 @@ public class Goomba extends Enemy {
         }
     }
     @Override
-    public void hitOnHead() {
+    public void hitOnHead(Mario mario) {
         setToDestroy = true;
         MyGdxGame.manager.get("audio/sounds/stomp.wav", Sound.class).play();
+    }
+
+    @Override
+    public void hitByEnemy(Enemy enemy) {
+        if(enemy instanceof Turtle && ((Turtle) enemy).currentState == Turtle.State.MOVING_SHELL)
+            setToDestroy = true;
+        else
+            reverseVelocity(true, false);
     }
 }
