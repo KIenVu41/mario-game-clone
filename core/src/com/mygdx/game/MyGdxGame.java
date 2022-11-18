@@ -15,7 +15,7 @@ public class MyGdxGame extends Game {
 	//Virtual Screen size and Box2D Scale(Pixels Per Meter)
 	public static final int V_WIDTH = 400;
 	public static final int V_HEIGHT = 200;
-	public static final float PPM = 200;
+	public static final float PPM = 100;
 
 	//Box2D Collision Bits
 	public static final short NOTHING_BIT = 0;
@@ -29,6 +29,7 @@ public class MyGdxGame extends Game {
 	public static final short ENEMY_HEAD_BIT = 128;
 	public static final short ITEM_BIT = 256;
 	public static final short MARIO_HEAD_BIT = 512;
+	public static final short FIREBALL_BIT = 1024;
 
 	public SpriteBatch batch;
 	public static AssetManager manager;

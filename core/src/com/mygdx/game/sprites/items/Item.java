@@ -20,11 +20,12 @@ public abstract class Item extends Sprite {
     public Item(PlayScreen screen, float x, float y) {
         this.screen = screen;
         this.world = screen.getWorld();
+        toDestroy = false;
+        destroyed = false;
+
         setPosition(x, y);
         setBounds(getX(), getY(), 16 / MyGdxGame.PPM, 16 / MyGdxGame.PPM);
         defineItem();
-        toDestroy = false;
-        destroyed = false;
     }
 
     public abstract void defineItem();

@@ -3,6 +3,7 @@ package com.mygdx.game.sprites;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.g2d.Animation;
+import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
@@ -18,6 +19,8 @@ import com.badlogic.gdx.utils.Array;
 import com.mygdx.game.MyGdxGame;
 import com.mygdx.game.screens.PlayScreen;
 import com.mygdx.game.sprites.enemies.Enemy;
+import com.mygdx.game.sprites.enemies.Turtle;
+import com.mygdx.game.sprites.other.FireBall;
 
 import javax.management.StandardEmitterMBean;
 
@@ -47,7 +50,10 @@ public class Mario extends Sprite {
     private boolean marioIsDead;
     private PlayScreen screen;
 
+    private Array<FireBall> fireballs;
+
     public Mario(PlayScreen screen) {
+        this.screen = screen;
         this.world = screen.getWorld();
         currentState = State.STANDING;
         previousState = State.STANDING;
@@ -55,16 +61,17 @@ public class Mario extends Sprite {
         runningRight = true;
 
         Array<TextureRegion> frames = new Array<TextureRegion>();
+
         //get run animation frames and add them to marioRun Animation
         for(int i = 1; i < 4; i++)
             frames.add(new TextureRegion(screen.getAtlas().findRegion("little_mario"), i * 16, 0, 16, 16));
-        marioRun = new Animation(0.1f, frames);
+        marioRun = new Animation<TextureRegion>(0.1f, frames);
 
         frames.clear();
 
         for(int i = 1; i < 4; i++)
             frames.add(new TextureRegion(screen.getAtlas().findRegion("big_mario"), i * 16, 0, 16, 32));
-        bigMarioRun = new Animation(0.1f, frames);
+        bigMarioRun = new Animation<TextureRegion>(0.1f, frames);
 
         frames.clear();
 
@@ -73,7 +80,7 @@ public class Mario extends Sprite {
         frames.add(new TextureRegion(screen.getAtlas().findRegion("big_mario"), 0, 0, 16, 32));
         frames.add(new TextureRegion(screen.getAtlas().findRegion("big_mario"), 240, 0, 16, 32));
         frames.add(new TextureRegion(screen.getAtlas().findRegion("big_mario"), 0, 0, 16, 32));
-        growMario = new Animation(0.2f, frames);
+        growMario = new Animation<TextureRegion>(0.2f, frames);
 
 
         //get jump animation frames and add them to marioJump Animation
@@ -86,12 +93,21 @@ public class Mario extends Sprite {
 
         marioDead = new TextureRegion(screen.getAtlas().findRegion("little_mario"), 96, 0, 16, 16);
 
+        //define mario in Box2d
         defineMario();
+        //set initial values for marios location, width and height. And initial frame as marioStand.
         setBounds(0, 0, 16 / MyGdxGame.PPM, 16 / MyGdxGame.PPM);
         setRegion(marioStand);
+
+        fireballs = new Array<FireBall>();
     }
 
     public void update(float dt) {
+
+        if (screen.getHud().isTimeUp() && !isDead()) {
+            die();
+        }
+
         if(marioIsBig){
             setPosition(b2body.getPosition().x - getWidth() / 2, b2body.getPosition().y - getHeight() / 2 - 6 / MyGdxGame.PPM);
         } else {
@@ -103,6 +119,12 @@ public class Mario extends Sprite {
         }
         if(timeToRedefineMario) {
             redefineMario();
+        }
+
+        for(FireBall  ball : fireballs) {
+            ball.update(dt);
+            if(ball.isDestroyed())
+                fireballs.removeValue(ball, true);
         }
     }
 
@@ -147,6 +169,7 @@ public class Mario extends Sprite {
         currentState = getState();
 
         TextureRegion region;
+
         switch (currentState) {
             case DEAD:
                 region = marioDead;
@@ -184,17 +207,21 @@ public class Mario extends Sprite {
     }
 
     public State getState() {
-        if(runGrowAnimation) {
+        if(marioIsDead)
+            return State.DEAD;
+        else if(runGrowAnimation)
             return State.GROWING;
-        } else if(b2body.getLinearVelocity().y > 0 || (b2body.getLinearVelocity().y < 0 && previousState == State.JUMPING)) {
+        else if((b2body.getLinearVelocity().y > 0 && currentState == State.JUMPING) || (b2body.getLinearVelocity().y < 0 && previousState == State.JUMPING))
             return State.JUMPING;
-        } else if(b2body.getLinearVelocity().y < 0) {
+            //if negative in Y-Axis mario is falling
+        else if(b2body.getLinearVelocity().y < 0)
             return State.FALLING;
-        } else if(b2body.getLinearVelocity().x != 0) {
+            //if mario is positive or negative in the X axis he is running
+        else if(b2body.getLinearVelocity().x != 0)
             return State.RUNNING;
-        }else {
+            //if none of these return then he must be standing
+        else
             return State.STANDING;
-        }
     }
 
     public void grow() {
@@ -219,7 +246,7 @@ public class Mario extends Sprite {
         fdef.filter.categoryBits = MyGdxGame.MARIO_BIT;
         fdef.filter.maskBits = MyGdxGame.GROUND_BIT | MyGdxGame.COIN_BIT | MyGdxGame.BRICK_BIT | MyGdxGame.ENEMY_BIT | MyGdxGame.OBJECT_BIT | MyGdxGame.ENEMY_HEAD_BIT;
         fdef.shape = shape;
-        b2body.createFixture(fdef);
+        b2body.createFixture(fdef).setUserData(this);
 
         EdgeShape head = new EdgeShape();
         head.set(new Vector2(-2 / MyGdxGame.PPM, 6 / MyGdxGame.PPM), new Vector2(2 / MyGdxGame.PPM, 6 / MyGdxGame.PPM));
@@ -265,7 +292,14 @@ public class Mario extends Sprite {
         b2body.createFixture(fdef).setUserData(this);
         timeToDefineBigMario = false;
     }
-    
+
+    public void jump(){
+        if ( currentState != State.JUMPING ) {
+            b2body.applyLinearImpulse(new Vector2(0, 4f), b2body.getWorldCenter(), true);
+            currentState = State.JUMPING;
+        }
+    }
+
     public boolean isBig(){
         return marioIsBig;
     }
@@ -278,15 +312,29 @@ public class Mario extends Sprite {
         return stateTimer;
     }
 
+    public void fire(){
+        fireballs.add(new FireBall(screen, b2body.getPosition().x, b2body.getPosition().y, runningRight ? true : false));
+    }
+
     public void hit(Enemy enemy){
-        if (marioIsBig) {
-            marioIsBig = false;
-            timeToRedefineMario = true;
-            setBounds(getX(), getY(), getWidth(), getHeight() / 2);
-            MyGdxGame.manager.get("audio/sounds/powerdown.wav", Sound.class).play();
-        } else {
-            die();
+        if(enemy instanceof Turtle && ((Turtle) enemy).currentState == Turtle.State.STANDING_SHELL)
+            ((Turtle) enemy).kick(enemy.b2body.getPosition().x > b2body.getPosition().x ? Turtle.KICK_RIGHT : Turtle.KICK_LEFT);
+        else {
+            if (marioIsBig) {
+                marioIsBig = false;
+                timeToRedefineMario = true;
+                setBounds(getX(), getY(), getWidth(), getHeight() / 2);
+                MyGdxGame.manager.get("audio/sounds/powerdown.wav", Sound.class).play();
+            } else {
+                die();
+            }
         }
+    }
+
+    public void draw(Batch batch){
+        super.draw(batch);
+        for(FireBall ball : fireballs)
+            ball.draw(batch);
     }
 
     public void die() {

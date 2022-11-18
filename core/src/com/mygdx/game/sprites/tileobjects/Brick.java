@@ -22,9 +22,7 @@ public class Brick extends InteractiveTileObject {
             getCell().setTile(null);
             Hud.addScore(200);
             MyGdxGame.manager.get("audio/sounds/breakblock.wav", Sound.class).play();
-        } else {
-            MyGdxGame.manager.get("audio/sounds/bump.wav", Sound.class).play();
-
         }
+        MyGdxGame.manager.get("audio/sounds/bump.wav", Sound.class).play();
     }
 }

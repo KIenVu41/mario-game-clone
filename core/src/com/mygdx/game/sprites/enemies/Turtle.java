@@ -89,10 +89,10 @@ public class Turtle extends Enemy{
                 break;
         }
 
-        if(velocity.x > 0 && region.isFlipX() == false){
+        if(velocity.x > 0 && !region.isFlipX()){
             region.flip(true, false);
         }
-        if(velocity.x < 0 && region.isFlipX() == true){
+        if(velocity.x < 0 && region.isFlipX()){
             region.flip(true, false);
         }
         stateTime = currentState == previousState ? stateTime + dt : 0;

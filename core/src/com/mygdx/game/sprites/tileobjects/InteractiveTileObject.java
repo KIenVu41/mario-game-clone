@@ -21,7 +21,6 @@ import com.mygdx.game.sprites.Mario;
 public abstract class InteractiveTileObject {
     protected World world;
     protected TiledMap map;
-    protected TiledMapTile tile;
     protected Rectangle bounds;
     protected Body body;
     protected PlayScreen screen;
@@ -46,7 +45,6 @@ public abstract class InteractiveTileObject {
         body = world.createBody(bodyDef);
 
         shape.setAsBox(bounds.getWidth() / 2 / MyGdxGame.PPM, bounds.getHeight() / 2 / MyGdxGame.PPM);
-        //shape.setAsBox(rect.getWidth() / 2, rect.getHeight() / 2);
         fdef.shape = shape;
         fixture = body.createFixture(fdef);
     }

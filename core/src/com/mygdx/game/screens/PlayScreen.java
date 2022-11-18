@@ -76,6 +76,7 @@ public class PlayScreen implements Screen {
 
         music = MyGdxGame.manager.get("audio/music/mario_music.ogg", Music.class);
         music.setLooping(true);
+        music.setVolume(0.3f);
         //music.play();
 
         items = new Array<Item>();
@@ -87,12 +88,12 @@ public class PlayScreen implements Screen {
     }
 
     public void handleSpawningItems() {
-    if(!itemsToSpawn.isEmpty()) {
-        ItemDef itemDef = itemsToSpawn.poll();
-        if(itemDef.type == Mushroom.class) {
-            items.add(new Mushroom(this, itemDef.position.x, itemDef.position.y));
+        if(!itemsToSpawn.isEmpty()) {
+            ItemDef itemDef = itemsToSpawn.poll();
+            if(itemDef.type == Mushroom.class) {
+                items.add(new Mushroom(this, itemDef.position.x, itemDef.position.y));
+            }
         }
-    }
     }
 
     public TextureAtlas getAtlas() {
@@ -101,19 +102,19 @@ public class PlayScreen implements Screen {
 
     public void handleInput(float dt) {
         if(player.currentState != Mario.State.DEAD) {
-//            Gdx.input.isKeyPressed(Input.Keys.W)
             if(Gdx.input.isKeyPressed(Input.Keys.W)) {
-                Gdx.app.log("Debug", "w pressed!");
-                player.b2body.applyLinearImpulse(new Vector2(0, 4f), player.b2body.getWorldCenter(), true);
+                //player.b2body.applyLinearImpulse(new Vector2(0, 4f), player.b2body.getWorldCenter(), true);
+                player.jump();
             }
             if(Gdx.input.isKeyPressed(Input.Keys.D) && player.b2body.getLinearVelocity().x <= 2) {
-                Gdx.app.log("Debug", "d pressed!");
                 player.b2body.applyLinearImpulse(new Vector2(2f, 0), player.b2body.getWorldCenter(), true);
             }
             if(Gdx.input.isKeyPressed(Input.Keys.A) && player.b2body.getLinearVelocity().x >= -2) {
                 Gdx.app.log("Debug", "a pressed!");
                 player.b2body.applyLinearImpulse(new Vector2(-2f, 0), player.b2body.getWorldCenter(), true);
             }
+            if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE))
+                player.fire();
         }
     }
 
@@ -121,13 +122,20 @@ public class PlayScreen implements Screen {
         handleInput(dt);
         handleSpawningItems();
 
-        world.step(1/60f, 6, 2);
+        world.step(1 / 60f, 6, 2);
 
         player.update(dt);
-        for(Enemy e: creator.getGoombas()) {
-            e.update(dt);
-            if(e.getX() < player.getX() + 224 / MyGdxGame.PPM) {
-                e.b2body.setActive(true);
+//        for(Enemy e: creator.getGoombas()) {
+//            e.update(dt);
+//            if(e.getX() < player.getX() + 224 / MyGdxGame.PPM) {
+//                e.b2body.setActive(true);
+//            }
+//        }
+
+        for(Enemy enemy : creator.getEnemies()) {
+            enemy.update(dt);
+            if(enemy.getX() < player.getX() + 224 / MyGdxGame.PPM) {
+                enemy.b2body.setActive(true);
             }
         }
 
@@ -168,9 +176,8 @@ public class PlayScreen implements Screen {
         myGdxGame.batch.setProjectionMatrix(gamecam.combined);
         myGdxGame.batch.begin();
         player.draw(myGdxGame.batch);
-        for(Enemy e: creator.getGoombas()) {
-            e.draw(myGdxGame.batch);
-        }
+        for (Enemy enemy : creator.getEnemies())
+            enemy.draw(myGdxGame.batch);
 
         for(Item item : items) {
             item.draw(myGdxGame.batch);
@@ -230,4 +237,6 @@ public class PlayScreen implements Screen {
         b2dr.dispose();
         hud.dispose();
     }
+
+    public Hud getHud(){ return hud; }
 }

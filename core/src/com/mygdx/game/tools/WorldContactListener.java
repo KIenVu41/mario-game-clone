@@ -10,6 +10,7 @@ import com.mygdx.game.MyGdxGame;
 import com.mygdx.game.sprites.Mario;
 import com.mygdx.game.sprites.enemies.Enemy;
 import com.mygdx.game.sprites.items.Item;
+import com.mygdx.game.sprites.other.FireBall;
 import com.mygdx.game.sprites.tileobjects.InteractiveTileObject;
 
 public class WorldContactListener implements ContactListener {
@@ -54,15 +55,14 @@ public class WorldContactListener implements ContactListener {
                 }
                 break;
             case MyGdxGame.MARIO_BIT | MyGdxGame.ENEMY_BIT:
-                if(fixA.getFilterData().categoryBits == MyGdxGame.MARIO_HEAD_BIT) {
+                if(fixA.getFilterData().categoryBits == MyGdxGame.MARIO_BIT)
                     ((Mario) fixA.getUserData()).hit((Enemy)fixB.getUserData());
-                } else {
+                else
                     ((Mario) fixB.getUserData()).hit((Enemy)fixA.getUserData());
-                }
                 break;
             case MyGdxGame.ENEMY_BIT | MyGdxGame.ENEMY_BIT:
-                ((Enemy)fixA.getUserData()).reverseVelocity(true, false);
-                ((Enemy)fixB.getUserData()).reverseVelocity(true, false);
+                ((Enemy)fixA.getUserData()).hitByEnemy((Enemy)fixB.getUserData());
+                ((Enemy)fixB.getUserData()).hitByEnemy((Enemy)fixA.getUserData());
                 break;
             case MyGdxGame.ITEM_BIT | MyGdxGame.OBJECT_BIT:
                 if(fixA.getFilterData().categoryBits == MyGdxGame.ITEM_BIT) {
@@ -77,6 +77,12 @@ public class WorldContactListener implements ContactListener {
                 } else {
                     ((Item)fixB.getUserData()).use((Mario) fixA.getUserData());
                 }
+                break;
+            case MyGdxGame.FIREBALL_BIT | MyGdxGame.OBJECT_BIT:
+                if(fixA.getFilterData().categoryBits == MyGdxGame.FIREBALL_BIT)
+                    ((FireBall)fixA.getUserData()).setToDestroy();
+                else
+                    ((FireBall)fixB.getUserData()).setToDestroy();
                 break;
         }
     }
