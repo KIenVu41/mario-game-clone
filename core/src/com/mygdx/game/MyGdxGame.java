@@ -9,6 +9,7 @@ import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.ScreenUtils;
+import com.mygdx.game.screens.MenuScreen;
 import com.mygdx.game.screens.PlayScreen;
 
 public class MyGdxGame extends Game {
@@ -49,7 +50,8 @@ public class MyGdxGame extends Game {
 		manager.load("audio/sounds/mariodie.wav", Sound.class);
 
 		manager.finishLoading();
-		setScreen(new PlayScreen(this));
+		//setScreen(new PlayScreen(this));
+		setScreen(new MenuScreen());
 	}
 
 	@Override
